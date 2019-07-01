@@ -24,7 +24,7 @@ const int mqttPort = 1883;
 const char* mqttUser = "yourMQTTuser";
 const char* mqttPassword = "yourMQTTpassword";
 const char* sensor = "SENSOR";
-const char* mqttPublishTopic = "test/topic";
+const char* mqttPublishTopic = "TEST/TOPIC";
 
 // Example MQTT Json message
 const char* exampleMQTT = "{\"sensor\":\"esp32_01\",\"time\":1561925850,\"data\":[58,29.4]}";
@@ -47,7 +47,7 @@ DHT dht(DHTPIN, DHTTYPE);
 
 // Creates WiFi UDP instance and passes it on as a parameter for the NTP client object
 WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP, "europe.pool.ntp.org", 7200, 60000);
+NTPClient timeClient(ntpUDP, "europe.pool.ntp.org", 7200);
 
 
 //////////Functions/////////////
@@ -97,7 +97,8 @@ void setupMqtt()
             Serial.println("Server: ");
             Serial.println(mqttBroker);
             Serial.println("Port: ");
-            Serial.println(mqttPort); 
+            Serial.println(mqttPort);
+            Serial.println(); 
 
         // If not display client state and try again
         } else {
@@ -131,19 +132,30 @@ void loop()
 {
     // Checks wether WiFi connection is established, else it calls function to set up WiFi connection
     if (WiFi.status() != WL_CONNECTED){
-        Serial.println("\nTrying to connect to WiFi");
+        Serial.println("\nSTATUS: Trying to connect to WiFi");
         setupWiFi();
+    }else{
+        Serial.println("STATUS: Connected to WiFi.");
     }
-
-    // As long as NTP client is not up to date it should be forced to get current time
-    while(!timeClient.update()) {
-        timeClient.forceUpdate();
-        delay(500);
-        Serial.print(".");
+ 
+    // Check if time is up to date
+    if (timeClient.update()){
+        Serial.println("STATUS: Time up to date");
+    }else{
+        //Update time
+        while(!timeClient.update()) {
+        Serial.print(".T.");
+        delay(10000);
+        }
     }
-
+    
     // Once MQTT client is connected, is has to be refreshed every loop
     client.loop();
+    if (client.connected()){
+        Serial.println("STATUS: Connected to MQTT Broker.");
+    }else{
+        setupMqtt();
+    }
 
     // Requests humidity data from DHT22 sensor
     float h = dht.readHumidity();
@@ -152,7 +164,7 @@ void loop()
     
     // Check if any reads failed and exit early (to try again).
     if (isnan(h) || isnan(t)) {
-        Serial.println("Failed to read from DHT sensor!");
+        Serial.println("STATUS: Failed to read from DHT sensor!");
         return;
     }
 
@@ -164,14 +176,24 @@ void loop()
     JsonArray data = doc.createNestedArray("data");
     data.add(h);
     data.add(t);
+    
     // Serialize JSON doc to char buffer with variable capacity (MQTT client needs char / char*)
     char JSONmessageBuffer[CAPACITY];
     //serializeJson(doc, Serial);
     serializeJson(doc, JSONmessageBuffer);
+    
     // Publishes JSON to defined MQTT topic
-    client.publish(mqttPublishTopic, JSONmessageBuffer);
+    while(!client.publish(mqttPublishTopic, JSONmessageBuffer)) {
+        delay(10000);
+        Serial.print(".MQTT.");
+    }
+    
     doc = NULL;
 
     // Defines the repetition rate in milliseconds
-    delay(5000);
+    delay(10000);
+
+    Serial.println();
+    Serial.println("LOOP END");
+    Serial.println();
 }
