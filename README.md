@@ -11,7 +11,7 @@ The data is send to my Mosquitto broker which runs on Ubuntu 18.04.02 LTS. For v
 In Openhab2 I defined items for the temperature, humidity and battery voltage data. Each time the values are published in MQTT the server reads them and displays them on my sitemap.
 
 <p align="center">
-  <img width="750" height="300" src="Images/Openhab2.png">
+  <img height="300" src="Images/Openhab2.png">
 </p>
 
 To get a history of the measurements, the data will be saved to an Influx database in a defined interval.  
@@ -19,5 +19,5 @@ To get a history of the measurements, the data will be saved to an Influx databa
 This database is connected to Grafana. This allows me to create a dashboard to display the sensor data, create alerts and compare values with historical data.
 
 <p align="center">
-  <img width="850" height="500" src="Images/Grafana.png">
+  <img height="500" src="Images/Grafana.png">
 </p>
