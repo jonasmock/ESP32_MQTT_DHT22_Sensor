@@ -21,3 +21,15 @@ This database is connected to Grafana. This allows me to create a dashboard to d
 <p align="center">
   <img src="Images/Grafana.png">
 </p>
+
+<p align="center">
+  <img src="Images/esp32.jpeg">
+</p>
+
+<p align="center">
+  <img src="Images/wohnung_temp.jpeg">
+</p>
+
+<p align="center">
+  <img src="Images/wohnung_temp2.jpeg">
+</p>
