@@ -27,9 +27,12 @@ This database is connected to Grafana. This allows me to create a dashboard to d
 </p>
 
 <p align="center">
-  <img src="Images/wohnung_temp.jpeg">
+  <img src="Images/wohnung_temp.png">
 </p>
 
+
+In order to be able to interpret the data at a glance, the sensor data are displayed for the respective room. As soon as a threshold value for the air humidity is reached, an alert is sent via telegram with the hint to open the window in the respective room.
+
 <p align="center">
-  <img src="Images/wohnung_temp2.jpeg">
+  <img src="Images/wohnung_temp2.png">
 </p>
